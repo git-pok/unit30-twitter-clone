@@ -4,8 +4,9 @@ from flask import Flask, render_template, request, flash, redirect, session, g
 from flask_debugtoolbar import DebugToolbarExtension
 from sqlalchemy.exc import IntegrityError
 
-from forms import UserAddForm, LoginForm, MessageForm
+from forms import UserAddForm, LoginForm, MessageForm, UserEditForm
 from models import db, connect_db, User, Message, Follows
+from app_methods import update_user
 
 CURR_USER_KEY = "curr_user"
 
@@ -18,7 +19,7 @@ app.config['SQLALCHEMY_DATABASE_URI'] = (
 
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SQLALCHEMY_ECHO'] = False
-app.config['DEBUG_TB_INTERCEPT_REDIRECTS'] = True
+app.config['DEBUG_TB_INTERCEPT_REDIRECTS'] = False
 app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', "it's a secret")
 toolbar = DebugToolbarExtension(app)
 
@@ -32,7 +33,8 @@ connect_db(app)
 @app.before_request
 def add_user_to_g():
     """If we're logged in, add curr user to Flask global."""
-
+    # this view runs before every request
+    # line 39 creates a g object with info for the logged in user 
     if CURR_USER_KEY in session:
         g.user = User.query.get(session[CURR_USER_KEY])
 
@@ -42,7 +44,7 @@ def add_user_to_g():
 
 def do_login(user):
     """Log in user."""
-
+    # creates a session variable to track user
     session[CURR_USER_KEY] = user.id
 
 
@@ -75,7 +77,8 @@ def signup():
                 image_url=form.image_url.data or User.image_url.default.arg,
             )
             db.session.commit()
-            session['username'] = user.username
+            # Added line 81
+            session[CURR_USER_KEY] = user.id
 
         except IntegrityError:
             flash("Username already taken", 'danger')
@@ -100,6 +103,7 @@ def login():
 
         if user:
             do_login(user)
+            # Added line 107
             flash(f"Hello, {user.username}!", "success")
             return redirect("/")
 
@@ -111,6 +115,7 @@ def login():
 @app.route('/logout')
 def logout():
     """Handle logout of user."""
+    # wrote all logic
     session.clear()
     flash(f"Successfully logged out!", "success")
     return redirect('/')
@@ -211,8 +216,34 @@ def stop_following(follow_id):
 @app.route('/users/profile', methods=["GET", "POST"])
 def profile():
     """Update profile for current user."""
+    # Added all logic here
+    form = UserEditForm()
+    session_id = session.get('curr_user', False)
+    user = User.query.filter_by(id = session_id).first()
 
-    # IMPLEMENT THIS
+    if not session_id:
+        return redirect(f"/users/{user.id}")
+
+    if form.validate_on_submit():
+        edit_form_auth = User.authenticate(form.username.data,
+        form.password.data
+        )
+
+        if edit_form_auth:
+            emailf = form.data.get("email")
+            usernamef = form.data.get("username")
+            image_urlf = form.data.get("image_url")
+            header_image_urlf = form.data.get("header_image_url")
+  
+            update_user(user, emailf, usernamef, image_urlf, header_image_urlf)
+            flash(f"Successfully edited user!", "success")
+            return redirect(f"/users/{user.id}")
+        else:
+            flash("Access unauthorized.", "danger")
+            return render_template('/users/edit.html', form=form)
+
+    
+    return render_template('/users/edit.html', form=form)
 
 
 @app.route('/users/delete', methods=["POST"])
@@ -291,6 +322,8 @@ def homepage():
     - anon users: no messages
     - logged in: 100 most recent messages of followed_users
     """
+    # g is a flask object that has data of the logged in user.
+    # g.user returns a User object of the current user
     if g.user:
         messages = (Message
                     .query

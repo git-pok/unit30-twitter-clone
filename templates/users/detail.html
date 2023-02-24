@@ -1,8 +1,22 @@
 {% extends 'base.html' %}
 
 {% block content %}
-
-<div id="warbler-hero" class="full-width"></div>
+<!-- show.html uses this template, and is the file that gets rendered from
+  '/users/[user-id]' -->
+<div class="full-width">
+  <!-- Added the if conditionals and image below, and the full-width class.
+    I removed the warbler-hero id from the div. Note, the space
+    from the bottom of the navbar to the top of the image
+    is the 1rem margin bottom on .navbar; I kept it because
+    the homepage navbar without this margin makes the
+    content too close to it.
+  -->
+  {% if user.header_image_url %}
+    <img src="{{ user.header_image_url }}" alt="Image for {{ user.username }}" class="full-width">
+  {% else %}
+    <img src="/static/images/warbler-hero.jpg" alt="Image for {{ user.username }}" class="full-width">
+  {% endif %}
+  </div>
 <img src="{{ user.image_url }}" alt="Image for {{ user.username }}" id="profile-avatar">
 <div class="row full-width">
   <div class="container">
@@ -58,8 +72,9 @@
 <div class="row">
   <div class="col-sm-3">
     <h4 id="sidebar-username">@{{ user.username }}</h4>
-    <p>BIO HERE</p>
-    <p class="user-location"><span class="fa fa-map-marker"></span>LOCATION HERE</p>
+    <!-- Added bio and location jinja variable. -->
+    <p>BIO: {{ user.bio }}</p>
+    <p class="user-location"><span class="fa fa-map-marker"></span>{{ user.location }}</p>
   </div>
 
   {% block user_details %}

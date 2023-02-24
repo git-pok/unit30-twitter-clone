@@ -110,7 +110,7 @@ class User(db.Model):
         secondary="follows",
         # primaryjoin specifies data we get when we access an instance
         primaryjoin=(Follows.user_following_id == id),
-        # secondaryjoin specifies data we get when we access instance.followers
+        # secondaryjoin specifies data we get when we access instance.following
         secondaryjoin=(Follows.user_being_followed_id == id)
     )
 
@@ -130,7 +130,7 @@ class User(db.Model):
 
     def is_following(self, other_user):
         """Is this user following `other_use`?"""
-
+        # Must pass a python object in the argument when caling this method.
         found_user_list = [user for user in self.following if user == other_user]
         return len(found_user_list) == 1
 
