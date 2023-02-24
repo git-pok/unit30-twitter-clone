@@ -99,14 +99,18 @@ class User(db.Model):
     followers = db.relationship(
         "User",
         secondary="follows",
+        # primaryjoin specifies data we get when we access an instance 
         primaryjoin=(Follows.user_being_followed_id == id),
+        # secondaryjoin specifies data we get when we access instance.followers
         secondaryjoin=(Follows.user_following_id == id)
     )
 
     following = db.relationship(
         "User",
         secondary="follows",
+        # primaryjoin specifies data we get when we access an instance
         primaryjoin=(Follows.user_following_id == id),
+        # secondaryjoin specifies data we get when we access instance.followers
         secondaryjoin=(Follows.user_being_followed_id == id)
     )
 

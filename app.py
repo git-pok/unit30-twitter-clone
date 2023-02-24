@@ -5,7 +5,7 @@ from flask_debugtoolbar import DebugToolbarExtension
 from sqlalchemy.exc import IntegrityError
 
 from forms import UserAddForm, LoginForm, MessageForm
-from models import db, connect_db, User, Message
+from models import db, connect_db, User, Message, Follows
 
 CURR_USER_KEY = "curr_user"
 
@@ -55,7 +55,7 @@ def do_logout():
 
 @app.route('/signup', methods=["GET", "POST"])
 def signup():
-    """Handle user signup.
+    """Handle user signup. 
 
     Create new user and add to DB. Redirect to home page.
 
@@ -64,7 +64,6 @@ def signup():
     If the there already is a user with that username: flash message
     and re-present form.
     """
-
     form = UserAddForm()
 
     if form.validate_on_submit():
@@ -76,6 +75,7 @@ def signup():
                 image_url=form.image_url.data or User.image_url.default.arg,
             )
             db.session.commit()
+            session['username'] = user.username
 
         except IntegrityError:
             flash("Username already taken", 'danger')
@@ -92,7 +92,6 @@ def signup():
 @app.route('/login', methods=["GET", "POST"])
 def login():
     """Handle user login."""
-
     form = LoginForm()
 
     if form.validate_on_submit():
@@ -112,7 +111,9 @@ def login():
 @app.route('/logout')
 def logout():
     """Handle logout of user."""
-
+    session.clear()
+    flash(f"Successfully logged out!", "success")
+    return redirect('/')
     # IMPLEMENT THIS
 
 
@@ -290,7 +291,6 @@ def homepage():
     - anon users: no messages
     - logged in: 100 most recent messages of followed_users
     """
-
     if g.user:
         messages = (Message
                     .query
