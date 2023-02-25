@@ -11,7 +11,14 @@
     the homepage navbar without this margin makes the
     content too close to it.
   -->
-  {% if user.header_image_url %}
+  <!-- if user.header_image_url, doesn't work with the logic in line 19-25.
+    This db has a lot of header images that render as xml, and
+    python and jinja can't render them; even when we access the jpg
+    url for the image.
+  -->
+  {% if status_code == 403|int() %}
+    <img src="/static/images/warbler-hero.jpg" alt="Image for {{ user.username }}" class="full-width">
+  {% elif status_code != 403|int() %}
     <img src="{{ user.header_image_url }}" alt="Image for {{ user.username }}" class="full-width">
   {% else %}
     <img src="/static/images/warbler-hero.jpg" alt="Image for {{ user.username }}" class="full-width">

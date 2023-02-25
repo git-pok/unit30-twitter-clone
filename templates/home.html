@@ -6,7 +6,20 @@
       <div class="card user-card">
         <div>
           <div class="image-wrapper">
-            <img src="{{ g.user.header_image_url }}" alt="" class="card-hero">
+            <!-- Added lines 15-21 -->
+            <!-- if user.header_image_url, doesn't work with the logic in line 19-25.
+              This db has a lot of header images that render as xml, and
+              python and jinja can't render them; even when we access the jpg
+              url for the image.
+            -->
+            {% if status_code == 403|int() %}
+              <img src="/static/images/warbler-hero.jpg" alt="Image for {{ g.user.username }}" class="card-hero">
+            {% elif status_code != 403|int() %}
+              <img src="{{ g.user.header_image_url }}" alt="Image for {{ g.user.username }}" class="card-hero">
+            {% else %}
+              <img src="/static/images/warbler-hero.jpg" alt="Image for {{ g.user.username }}" class="card-hero">
+            {% endif %}
+            <!-- replaced with 15-21: <img src="{{ g.user.header_image_url }}" alt="" class="card-hero"> -->
           </div>
           <a href="/users/{{ g.user.id }}" class="card-link">
             <img src="{{ g.user.image_url }}"

@@ -3,10 +3,10 @@ import os
 from flask import Flask, render_template, request, flash, redirect, session, g
 from flask_debugtoolbar import DebugToolbarExtension
 from sqlalchemy.exc import IntegrityError
-
+import requests
 from forms import UserAddForm, LoginForm, MessageForm, UserEditForm
 from models import db, connect_db, User, Message, Follows, Likes
-from app_methods import update_user, add_to_like, delete_like
+from app_methods import update_user, add_to_like, delete_like, xml_check_for_header_img
 
 CURR_USER_KEY = "curr_user"
 
@@ -121,7 +121,6 @@ def logout():
     session.clear()
     flash(f"Successfully logged out!", "success")
     return redirect('/')
-    # IMPLEMENT THIS
 
 
 ##############################################################################
@@ -149,6 +148,9 @@ def users_show(user_id):
     """Show user profile."""
 
     user = User.query.get_or_404(user_id)
+
+    # line 153 is for xml images not appearing in headers
+    status_code = xml_check_for_header_img(user)
     
     likes = db.session.query(Likes).join().all()
     # snagging messages in order from the database;
@@ -159,7 +161,8 @@ def users_show(user_id):
                 .order_by(Message.timestamp.desc())
                 .limit(100)
                 .all())
-    return render_template('users/show.html', user=user, messages=messages
+    return render_template('users/show.html', user=user, messages=messages,
+    status_code=status_code
     )
 
 
@@ -172,7 +175,13 @@ def show_following(user_id):
         return redirect("/")
 
     user = User.query.get_or_404(user_id)
-    return render_template('users/following.html', user=user)
+
+    # line 180 is for xml images not appearing in headers
+    status_code = xml_check_for_header_img(user)
+
+    return render_template('users/following.html', user=user,
+    status_code=status_code
+    )
 
 
 @app.route('/users/<int:user_id>/followers')
@@ -184,7 +193,13 @@ def users_followers(user_id):
         return redirect("/")
 
     user = User.query.get_or_404(user_id)
-    return render_template('users/followers.html', user=user)
+
+    # line 198 is for xml images not appearing in headers
+    status_code = xml_check_for_header_img(user)
+
+    return render_template('users/followers.html', user=user,
+    status_code=status_code
+    )
 
 
 @app.route('/users/follow/<int:follow_id>', methods=['POST'])
@@ -327,8 +342,8 @@ def add_like(message_id):
 
     like = Likes.query.filter(
     Likes.user_id == curr_user_id, Likes.message_id == message_id
-    ).first() 
-    
+    ).first()
+
     try:
         like_id = like.id
     except:
@@ -350,9 +365,11 @@ def likes_page(user_id):
     # Created all logic.
     user = User.query.get_or_404(user_id)
     liked_messages = user.likes
+    # line 369 is for xml images not appearing in headers
+    status_code = xml_check_for_header_img(user)
 
     return render_template('users/likes.html', user=user,
-    liked_messages=liked_messages
+    liked_messages=liked_messages, status_code=status_code
     )
 
 
@@ -370,13 +387,18 @@ def homepage():
     # g is a flask object that has data of the logged in user.
     # g.user returns a User object of the current user
     if g.user:
+        # Line 391 is for xml images not appearing in headers.
+        status_code = xml_check_for_header_img(g.user)
+    
         messages = (Message
                     .query
                     .order_by(Message.timestamp.desc())
                     .limit(100)
                     .all())
 
-        return render_template('home.html', messages=messages)
+        return render_template('home.html', messages=messages,
+        status_code=status_code
+        )
 
     else:
         return render_template('home-anon.html')
