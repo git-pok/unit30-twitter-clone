@@ -2,6 +2,7 @@ import os
 
 from flask import Flask, render_template, request, flash, redirect, session, g
 from flask_debugtoolbar import DebugToolbarExtension
+from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.exc import IntegrityError
 import requests
 from forms import UserAddForm, LoginForm, MessageForm, UserEditForm
