@@ -17,6 +17,9 @@ app = Flask(__name__)
 # if not set there, use development local db.
 app.config['SQLALCHEMY_DATABASE_URI'] = (
     os.environ.get('DATABASE_URL', 'postgresql:///warbler'))
+# test db
+# app.config['SQLALCHEMY_DATABASE_URI'] = (
+#     os.environ.get('DATABASE_URL', 'postgresql:///warbler-test'))
 
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SQLALCHEMY_ECHO'] = False
@@ -443,7 +446,7 @@ def homepage():
     if g.user:
         # Line 391 is for xml images not appearing in headers.
         status_code = xml_check_for_header_img(g.user)
-    
+
         messages = (Message
                     .query
                     .order_by(Message.timestamp.desc())
