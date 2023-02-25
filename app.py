@@ -28,6 +28,7 @@ connect_db(app)
 
 # import pdb
 # pdb.set_trace()
+# raise
 
 ##############################################################################
 # User signup/login/logout
