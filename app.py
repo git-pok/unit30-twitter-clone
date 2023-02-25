@@ -5,8 +5,8 @@ from flask_debugtoolbar import DebugToolbarExtension
 from sqlalchemy.exc import IntegrityError
 
 from forms import UserAddForm, LoginForm, MessageForm, UserEditForm
-from models import db, connect_db, User, Message, Follows
-from app_methods import update_user
+from models import db, connect_db, User, Message, Follows, Likes
+from app_methods import update_user, add_to_like, delete_like
 
 CURR_USER_KEY = "curr_user"
 
@@ -25,6 +25,8 @@ toolbar = DebugToolbarExtension(app)
 
 connect_db(app)
 
+# import pdb
+# pdb.set_trace()
 
 ##############################################################################
 # User signup/login/logout
@@ -147,7 +149,8 @@ def users_show(user_id):
     """Show user profile."""
 
     user = User.query.get_or_404(user_id)
-
+    
+    likes = db.session.query(Likes).join().all()
     # snagging messages in order from the database;
     # user.messages won't be in order by default
     messages = (Message
@@ -156,7 +159,8 @@ def users_show(user_id):
                 .order_by(Message.timestamp.desc())
                 .limit(100)
                 .all())
-    return render_template('users/show.html', user=user, messages=messages)
+    return render_template('users/show.html', user=user, messages=messages
+    )
 
 
 @app.route('/users/<int:user_id>/following')
@@ -309,6 +313,47 @@ def messages_destroy(message_id):
     db.session.commit()
 
     return redirect(f"/users/{g.user.id}")
+
+##############################################################################
+# Like routes
+
+@app.route('/users/add_like/<int:message_id>', methods=['GET', 'POST'])
+def add_like(message_id):
+    """Add a like for a message."""
+    # Created all logic.
+    message = Message.query.get_or_404(message_id)
+    message_user_id = message.user_id
+    curr_user_id = session['curr_user']
+
+    like = Likes.query.filter(
+    Likes.user_id == curr_user_id, Likes.message_id == message_id
+    ).first() 
+    
+    try:
+        like_id = like.id
+    except:
+        like_id = []
+     
+    if not g.user:
+        flash("Access unauthorized.", "danger")
+        return redirect("/")
+    else:
+        user_idf = g.user.id
+        add_to_like(user_idf, message_id, like_id, message_user_id)
+        
+        return redirect(f"/users/{message_user_id}")
+
+
+@app.route('/users/<int:user_id>/likes', methods=['GET'])
+def likes_page(user_id):
+    """Show likes for a user."""
+    # Created all logic.
+    user = User.query.get_or_404(user_id)
+    liked_messages = user.likes
+
+    return render_template('users/likes.html', user=user,
+    liked_messages=liked_messages
+    )
 
 
 ##############################################################################

@@ -1,9 +1,10 @@
 {% extends 'users/detail.html' %}
 {% block user_details %}
+<!-- Used this template from show.html -->
   <div class="col-sm-6">
     <ul class="list-group" id="messages">
-
-      {% for message in messages %}
+    <!-- Added line 6 -->
+      {% for message in liked_messages %}
 
         <li class="list-group-item">
           <a href="/messages/{{ message.id }}" class="message-link"/>
@@ -13,7 +14,8 @@
           </a>
 
           <div class="message-area">
-            <a href="/users/{{ user.id }}">@{{ user.username }}</a>
+            <!-- Added jinja variable in line 18-->
+            <a href="/users/{{ user.id }}">@{{ message.user.username }}</a>
             <span class="text-muted">{{ message.timestamp.strftime('%d %B %Y') }}</span>
             <p>{{ message.text }}</p>
           </div>

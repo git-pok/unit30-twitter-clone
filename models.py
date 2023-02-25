@@ -29,6 +29,9 @@ class Follows(db.Model):
 
 class Likes(db.Model):
     """Mapping user likes to warbles."""
+    # added line 33-34 for like images in show.html, line 24
+    def __repr__(self):
+        return f"{self.message_id}" 
 
     __tablename__ = 'likes' 
 
@@ -45,7 +48,7 @@ class Likes(db.Model):
     message_id = db.Column(
         db.Integer,
         db.ForeignKey('messages.id', ondelete='cascade'),
-        unique=True
+        # unique=True
     )
 
 
@@ -113,10 +116,11 @@ class User(db.Model):
         # secondaryjoin specifies data we get when we access instance.following
         secondaryjoin=(Follows.user_being_followed_id == id)
     )
-
+    # Sees if a user liked any messages
     likes = db.relationship(
         'Message',
-        secondary="likes"
+        secondary="likes",
+        backref='messages'
     )
 
     def __repr__(self):
@@ -202,6 +206,13 @@ class Message(db.Model):
     )
 
     user = db.relationship('User')
+    # added line 213, it's used for like icon colors
+    # Line 213 will show the message id in the Likes model,
+    # of the message instance it's called on,
+    # if there is a liked message with an id of a message. 
+    like = db.relationship(
+        'Likes'
+    )
 
 
 def connect_db(app):
