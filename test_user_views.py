@@ -2,7 +2,6 @@
 # run these tests like:
 # FLASK_ENV=production python -m unittest <name-of-python-file>
 # python -m unittest test_user_model.py
-from app import app
 import os
 from flask import session
 from flask_sqlalchemy import SQLAlchemy
@@ -13,13 +12,14 @@ from models import db, User, Message, Follows
 
 # environmental variable for test database
 # tests still effect real database
-# os.environ['DATABASE_URL'] = "postgresql:///warbler-test"
+os.environ['DATABASE_URL'] = "postgresql:///warbler-test"
+
+from app import app
+
 app.config['SQLALCHEMY_ECHO'] = False
 app.config['TESTING'] = True
 app.config['DEBUG_TB_HOSTS'] = ['dont-show-debug-toolbar']
 app.config['WTF_CSRF_ENABLED'] = False
-
-from app import app
 # db.drop_all() still effects real database
 # db.drop_all()
 # db.create_all()
@@ -30,6 +30,7 @@ class UserViewsTestCase(TestCase):
     # db.create_all()
     def setUp(self):
         """Create test client, add sample data."""
+        db.drop_all()
         db.create_all()
         User.query.delete()
         Message.query.delete()
@@ -40,7 +41,7 @@ class UserViewsTestCase(TestCase):
     def tearDown(self):
         """Tear down sample data."""
         db.session.rollback()
-        db.drop_all()
+        # db.drop_all()
 
     def test_login(self):
         """Tests model's views."""
