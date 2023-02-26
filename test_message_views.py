@@ -28,7 +28,6 @@ from app import app, CURR_USER_KEY
 
 db.create_all()
 
-# Don't have WTForms use CSRF at all, since it's a pain to test
 
 app.config['WTF_CSRF_ENABLED'] = False
 
@@ -45,9 +44,10 @@ class MessageViewTestCase(TestCase):
         self.client = app.test_client()
 
         self.testuser = User.signup(username="testuser",
-                                    email="test@test.com",
-                                    password="testuser",
-                                    image_url=None)
+            email="test@test.com",
+            password="testuser",
+            image_url=None
+        )
 
         db.session.commit()
 
@@ -61,8 +61,8 @@ class MessageViewTestCase(TestCase):
             with c.session_transaction() as sess:
                 sess[CURR_USER_KEY] = self.testuser.id
 
-            # Now, that session setting is saved, so we can have
-            # the rest of ours test
+            # That session setting is saved, so we can have
+            # the rest of our test
 
             resp = c.post("/messages/new", data={"text": "Hello"})
 

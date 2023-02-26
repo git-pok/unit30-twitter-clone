@@ -3,7 +3,7 @@
 # FLASK_ENV=production python -m unittest <name-of-python-file>
 # python -m unittest test_user_model.py
 import os
-from flask import session
+from flask import session, g
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.exc import IntegrityError
 from unittest import TestCase
@@ -143,8 +143,13 @@ class UserViewsTestCase(TestCase):
     #             session.get("curr_user")
     #             , 1
     #         )
+    #         g.user = signup
 
     #         likes_resp = client.get('/users/1/following')
+    #         # import pdb
+    #         # pdb.set_trace()
+    #         html = likes_resp.get_data() 
+    #         self.assertEqual('<h1></h1>', html)
 
             # self.maxDiff=None
             # Keep getting error when testing html, its too long
