@@ -1,9 +1,12 @@
 {% extends 'users/detail.html' %}
 {% block user_details %}
-<!-- Used this template from show.html -->
+<!-- I created this file and everything in it.
+  I used the template from show.html for the nav and such.
+  Read the code to see what new logics I added.
+-->
   <div class="col-sm-6">
     <ul class="list-group" id="messages">
-    <!-- Added line 6 -->
+    <!-- Added line 10 -->
       {% for message in liked_messages %}
 
         <li class="list-group-item">
@@ -14,14 +17,14 @@
           </a>
 
           <div class="message-area">
-            <!-- Added jinja variable in line 18-->
+            <!-- Added jinja variable in line 21-->
             <a href="/users/{{ user.id }}">@{{ message.user.username }}</a>
             <span class="text-muted">{{ message.timestamp.strftime('%d %B %Y') }}</span>
             <p>{{ message.text }}</p>
           </div>
-          <!-- Added line 21-36 -->
+
           <form method="POST" action="/users/add_like/{{ message.id }}" id="messages-form">
-            <!-- Added line 23-25 -->
+            <!-- Added line 28-30 -->
             <button class="btn btn-sm {{ 'btn-primary' if message.like[0]|string() == message.id|string() else 'btn-secondary' }}">
               <i class="fa fa-thumbs-up"></i> 
             </button>                       
