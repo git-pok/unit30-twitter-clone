@@ -1,4 +1,4 @@
-"""Message model tests."""
+"""User model views tests."""
 # Added everything in this file.
 # run these tests like:
 # FLASK_ENV=production python -m unittest <name-of-python-file>
@@ -12,7 +12,6 @@ from datetime import datetime
 from models import db, User, Message, Follows
 
 # environmental variable for test database
-# tests still effect real database
 os.environ['DATABASE_URL'] = "postgresql:///warbler-test"
 
 from app import app
@@ -25,7 +24,7 @@ app.config['WTF_CSRF_ENABLED'] = False
 class UserViewsTestCase(TestCase):
     """Test User views."""
     def setUp(self):
-        """Create test client, add sample data."""
+        """Create test client, and delete queries."""
         db.drop_all()
         db.create_all()
         User.query.delete()
@@ -35,12 +34,12 @@ class UserViewsTestCase(TestCase):
         self.client = app.test_client()
     
     def tearDown(self):
-        """Tear down sample data."""
+        """Clear session data."""
         db.session.rollback()
         # db.drop_all()
 
     def test_login(self):
-        """Tests model's views."""
+        """Tests model's login view."""
 
         signup = User.signup(
             email="test@test.com",
@@ -70,8 +69,11 @@ class UserViewsTestCase(TestCase):
                 , 1
             )
 
+            user_query = User.query.one()
+            self.assertEqual(user_query.email, "test@test.com")
+
     def test_login_fail(self):
-        """Tests model's views."""
+        """Tests model's login view for fail."""
 
         signup = User.signup(
             email="test@test.com",
@@ -104,48 +106,14 @@ class UserViewsTestCase(TestCase):
 
             self.assertEqual(resp.status_code, 200)
 
-    # def test_likes(self):
-    #     """Tests model's views."""
-    #     signup = User.signup(
-    #         email="test@test.com",
-    #         username="testuser",
-    #         password="HASHED_PASSWORD",
-    #         image_url="http//:www.testjpg.jpg"
-    #     ) 
+                # g.user = signup
+                # pdb.set_trace()
+                # html = likes_resp.get_data() 
+                # self.assertEqual('<h1></h1>', html)
 
-    #     db.session.add(signup)
-    #     db.session.commit()
-
-    #     with self.client as client:
-    #         # import pdb
-    #         # pdb.set_trace()
-    #         client.get('/')
-
-    #         self.assertEqual(
-    #             session.get("curr_user")
-    #             , None
-    #         )
-
-    #         credentials = {"username": 'testuser', "password": 'HASHED_PASSWORD'}
-    #         resp = client.post('/login', data=credentials, follow_redirects=True)
-            
-    #         self.assertEqual(resp.status_code, 200)
-            
-    #         self.assertEqual(
-    #             session.get("curr_user")
-    #             , 1
-    #         )
-    #         g.user = signup
-
-    #         likes_resp = client.get('/users/1/following')
-    #         # import pdb
-    #         # pdb.set_trace()
-    #         html = likes_resp.get_data() 
-    #         self.assertEqual('<h1></h1>', html)
-
-            # self.maxDiff=None
-            # Keep getting error when testing html, its too long
-            # I went to pdb, then tried data; it did not work
-            # html = likes_resp.get_data(as_text=True)
-            # self.maxDiff=None
-            # self.assertEqual('<h1></h1>', html) 
+                # self.maxDiff=None
+                # Keep getting error when testing html, its too long
+                # I went to pdb, then tried data; it did not work
+                # html = likes_resp.get_data(as_text=True)
+                # self.maxDiff=None
+                # self.assertEqual('<h1></h1>', html) 

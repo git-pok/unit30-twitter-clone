@@ -15,23 +15,25 @@ from models import db, User, Message, Follows
 os.environ['DATABASE_URL'] = "postgresql:///warbler-test"
 
 from app import app
-
-db.drop_all()
-db.create_all()
+app.config['SQLALCHEMY_ECHO'] = False
+app.config['TESTING'] = True
+app.config['DEBUG_TB_HOSTS'] = ['dont-show-debug-toolbar']
 
 class MessageModelTestCase(TestCase):
     """Test Message model."""
 
     def setUp(self):
-        """Create test client, add sample data."""
-
+        """Drop/create tables and delete queries."""
+        db.drop_all()
+        db.create_all()
         User.query.delete()
         Message.query.delete()
         Follows.query.delete()
 
+        self.client = app.test_client()
     
     def tearDown(self):
-        """Tear down sample data."""
+        """Tear down session data."""
         db.session.rollback()
 
 
@@ -89,4 +91,4 @@ class MessageModelTestCase(TestCase):
         # Message object should have data
         self.assertEqual(msg, msg)
         self.assertEqual(msg.text, 'test text')
-        self.assertEqual(msg.id, 2)
+        self.assertEqual(msg.id, 1)

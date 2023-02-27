@@ -11,12 +11,14 @@ from models import db, User, Message, Follows
 
 # environmental variable for test database
 os.environ['DATABASE_URL'] = "postgresql:///warbler-test"
+
+from app import app
+
 app.config['SQLALCHEMY_ECHO'] = False
 app.config['TESTING'] = True
 app.config['DEBUG_TB_HOSTS'] = ['dont-show-debug-toolbar']
 
-from app import app
-# Added line 20.
+# Added line 22.
 db.drop_all()
 db.create_all()
 
@@ -24,7 +26,7 @@ class UserModelTestCase(TestCase):
     """Test User model."""
 
     def setUp(self):
-        """Create test client, add sample data."""
+        """Delete queries."""
 
         User.query.delete()
         Message.query.delete()
@@ -32,7 +34,7 @@ class UserModelTestCase(TestCase):
 
     # Added tearDown and all logic in it.    
     def tearDown(self):
-        """Tear down sample data."""
+        """Clear session data."""
         db.session.rollback()
 
 
@@ -51,7 +53,7 @@ class UserModelTestCase(TestCase):
         # User should have no messages, followers, and likes
         self.assertEqual(len(u.messages), 0)
         self.assertEqual(len(u.followers), 0)
-        # Added line 55.
+        # Added line 57.
         self.assertEqual(len(u.likes), 0)
 
     # Added all test methods and logic from here on.    
