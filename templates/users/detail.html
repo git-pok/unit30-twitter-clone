@@ -4,7 +4,7 @@
 <!-- show.html uses this template, and is the file that gets rendered from
   '/users/[user-id]' -->
 <div class="full-width">
-  <!-- Added the if conditionals and image below, and the full-width class.
+  <!-- Added the if conditionals and all logic in lines 19-25, and the "full-width" image class.
     I removed the warbler-hero id from the div. Note, the space
     from the bottom of the navbar to the top of the image
     is the 1rem margin bottom on .navbar; I kept it because
@@ -50,7 +50,7 @@
           </li>
           <li class="stat">
             <p class="small">Likes</p>
-            <!-- Added line 47 -->
+            <!-- Added line 54 -->
             <h4><a href="/users/{{ user.id }}/likes">{{ user.likes | length }}</a></h4>
           </li>
           <div class="ml-auto">
@@ -80,7 +80,7 @@
 <div class="row">
   <div class="col-sm-3">
     <h4 id="sidebar-username">@{{ user.username }}</h4>
-    <!-- Added bio and location jinja variable. -->
+    <!-- Added bio and location jinja variable in line 84 and 85. -->
     <p>BIO: {{ user.bio }}</p>
     <p class="user-location"><span class="fa fa-map-marker"></span>{{ user.location }}</p>
   </div>
