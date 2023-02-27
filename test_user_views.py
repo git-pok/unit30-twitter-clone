@@ -1,4 +1,5 @@
 """Message model tests."""
+# Added everything in this file.
 # run these tests like:
 # FLASK_ENV=production python -m unittest <name-of-python-file>
 # python -m unittest test_user_model.py
@@ -20,14 +21,9 @@ app.config['SQLALCHEMY_ECHO'] = False
 app.config['TESTING'] = True
 app.config['DEBUG_TB_HOSTS'] = ['dont-show-debug-toolbar']
 app.config['WTF_CSRF_ENABLED'] = False
-# db.drop_all() still effects real database
-# db.drop_all()
-# db.create_all()
 
 class UserViewsTestCase(TestCase):
     """Test User views."""
-    # db.drop_all()
-    # db.create_all()
     def setUp(self):
         """Create test client, add sample data."""
         db.drop_all()
@@ -57,8 +53,6 @@ class UserViewsTestCase(TestCase):
         db.session.commit()
 
         with self.client as client:
-            # import pdb
-            # pdb.set_trace()
             client.get('/')
 
             self.assertEqual(
@@ -90,8 +84,6 @@ class UserViewsTestCase(TestCase):
         db.session.commit()
 
         with self.client as client:
-            # import pdb
-            # pdb.set_trace()
 
             client.get('/')
 
