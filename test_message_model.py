@@ -1,4 +1,5 @@
 """Message model tests."""
+# Added everything in this file.
 # run these tests like:
 # FLASK_ENV=production python -m unittest <name-of-python-file>
 # python -m unittest test_user_model.py
