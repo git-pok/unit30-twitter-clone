@@ -16,7 +16,7 @@ app.config['TESTING'] = True
 app.config['DEBUG_TB_HOSTS'] = ['dont-show-debug-toolbar']
 
 from app import app
-
+# Added line 20.
 db.drop_all()
 db.create_all()
 
@@ -30,7 +30,7 @@ class UserModelTestCase(TestCase):
         Message.query.delete()
         Follows.query.delete()
 
-    
+    # Added tearDown and all logic in it.    
     def tearDown(self):
         """Tear down sample data."""
         db.session.rollback()
@@ -51,9 +51,10 @@ class UserModelTestCase(TestCase):
         # User should have no messages, followers, and likes
         self.assertEqual(len(u.messages), 0)
         self.assertEqual(len(u.followers), 0)
+        # Added line 55.
         self.assertEqual(len(u.likes), 0)
 
-    
+    # Added all test methods and logic from here on.    
     def test_user_model_instances(self):
         """Tests model's instances."""
         u = User(
