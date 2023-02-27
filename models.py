@@ -48,6 +48,7 @@ class Likes(db.Model):
     message_id = db.Column(
         db.Integer,
         db.ForeignKey('messages.id', ondelete='cascade'),
+        # Deleted line 52 so messages may have multiple likes.
         # unique=True
     )
 
@@ -206,7 +207,7 @@ class Message(db.Model):
     )
 
     user = db.relationship('User')
-    # added line 213, it's used for like icon colors
+    # added line 214, it's used for like icon colors
     # Line 213 will show the message id in the Likes model,
     # of the message instance it's called on,
     # if there is a liked message with an id of a message. 
