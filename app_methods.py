@@ -1,3 +1,4 @@
+# Created everything in this file.
 from flask_sqlalchemy import SQLAlchemy
 from flask import Flask, flash
 import requests
