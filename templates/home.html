@@ -53,7 +53,7 @@
 
     <div class="col-lg-6 col-md-8 col-sm-12">
       <ul class="list-group" id="messages">
-        <!-- Added the if conditional in line 45; not the code from line 46-65 -->
+        <!-- Added the if conditional in line 58; not the code from line 59 and on. -->
         {% for msg in messages %}
         {% if g.user.is_following(msg.user) or msg.user_id == g.user.id %}
           <li class="list-group-item">
