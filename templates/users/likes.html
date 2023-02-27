@@ -6,19 +6,20 @@
 -->
   <div class="col-sm-6">
     <ul class="list-group" id="messages">
-    <!-- Added line 10 -->
+    <!-- Added line 10. -->
       {% for message in liked_messages %}
 
         <li class="list-group-item">
           <a href="/messages/{{ message.id }}" class="message-link"/>
-
-          <a href="/users/{{ user.id }}">
-            <img src="{{ user.image_url }}" alt="user image" class="timeline-image">
+          <!-- Added {{ message.user.id }} in line 15.-->
+          <a href="/users/{{ message.user.id }}">
+            <!-- Added {{ message.user.image_url }}. -->
+            <img src="{{ message.user.image_url }}" alt="user image" class="timeline-image">
           </a>
 
           <div class="message-area">
-            <!-- Added jinja variable in line 21-->
-            <a href="/users/{{ user.id }}">@{{ message.user.username }}</a>
+            <!-- Added {{ user.id }} and jinja variable in line 22.-->
+            <a href="/users/{{ message.user.id }}">@{{ message.user.username }}</a>
             <span class="text-muted">{{ message.timestamp.strftime('%d %B %Y') }}</span>
             <p>{{ message.text }}</p>
           </div>
