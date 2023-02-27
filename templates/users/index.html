@@ -23,7 +23,12 @@
 
                     {% if g.user %}
                       {% if g.user.is_following(user) %}
-                        <form method="POST" action="/users/stop-following/{{ user.id }}"">
+                      <!-- action="/users/stop-following/{{ user.id }}"
+                        was not in the form tag as an attribute. It was in the code as text;
+                        it would show up on users' profile cards in the rendered page.
+                        I moved it to where it was supposed to be.
+                      -->
+                        <form method="POST" action="/users/stop-following/{{ user.id }}">
                           <button class="btn btn-primary btn-sm">Unfollow</button>
                         </form>
                       {% else %}
@@ -35,7 +40,7 @@
                     {% endif %}
 
                   </div>
-                  <!-- Added BIO: {{ user.bio }}. -->
+                  <!-- Added BIO: {{ user.bio }} in line 44. -->
                   <p class="card-bio">BIO: {{ user.bio }}</p>
                 </div>
               </div>
