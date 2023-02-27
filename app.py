@@ -110,7 +110,7 @@ def login():
 
         if user:
             do_login(user)
-            # Added line 107
+            # Added line 114
             flash(f"Hello, {user.username}!", "success")
             return redirect("/")
 
@@ -156,7 +156,7 @@ def list_users():
 @app.route('/users/<int:user_id>')
 def users_show(user_id):
     """Show user profile."""
-    # Added line 150-156, and 168-170.
+    # Added line 160-161, 165, 167, and 179-181.
     try:
         if session.get(CURR_USER_KEY) == g.user.id:
             user = User.query.get_or_404(user_id)
@@ -184,7 +184,7 @@ def users_show(user_id):
 @app.route('/users/<int:user_id>/following')
 def show_following(user_id):
     """Show list of people this user is following."""
-    # Added line 181, and 194-196.
+    # Added line 188-189, 197, and 202-204.
     try:
         if session.get(CURR_USER_KEY) == g.user.id:
             if not g.user:
@@ -207,7 +207,7 @@ def show_following(user_id):
 @app.route('/users/<int:user_id>/followers')
 def users_followers(user_id):
     """Show list of followers of this user."""
-    # Added line 203, and 216-218.
+    # Added line 211-212, 220, and 225-227.
     try:
         if session.get(CURR_USER_KEY) == g.user.id:
             if not g.user:
@@ -230,7 +230,7 @@ def users_followers(user_id):
 @app.route('/users/follow/<int:follow_id>', methods=['GET', 'POST'])
 def add_follow(follow_id):
     """Add a follow for the currently-logged-in user."""
-    # Added line 225, and 235-237.
+    # Added line 234-235, and 245-247.
     try:
         if session.get(CURR_USER_KEY) == g.user.id:
             if not g.user:
@@ -250,7 +250,7 @@ def add_follow(follow_id):
 @app.route('/users/stop-following/<int:follow_id>', methods=['GET', 'POST'])
 def stop_following(follow_id):
     """Have currently-logged-in-user stop following this user."""
-    # Added line 244, and 254-256.
+    # Added line 254-255, and 265-267.
     try:
         if session.get(CURR_USER_KEY) == g.user.id:
             if not g.user:
@@ -308,7 +308,7 @@ def profile():
 @app.route('/users/delete', methods=["GET", "POST"])
 def delete_user():
     """Delete user."""
-    # Added line 300, and 311-313.
+    # Added line 312-313, and 324-326.
     try:
         if session.get(CURR_USER_KEY) == g.user.id:
             if not g.user:
@@ -335,7 +335,7 @@ def messages_add():
 
     Show form if GET. If valid, update message and redirect to user page.
     """
-    # Added line 326, and 341-343.
+    # Added line 339-340, and 355-357.
     try:
         if session.get(CURR_USER_KEY) == g.user.id:
             if not g.user:
@@ -360,7 +360,7 @@ def messages_add():
 @app.route('/messages/<int:message_id>', methods=["GET"])
 def messages_show(message_id):
     """Show a message."""
-    # Added line 350, and 353-355.
+    # Added line 364-365, and 368-370.
     try:
         if session.get(CURR_USER_KEY) == g.user.id:
             msg = Message.query.get(message_id)
@@ -373,7 +373,7 @@ def messages_show(message_id):
 @app.route('/messages/<int:message_id>/delete', methods=["GET", "POST"])
 def messages_destroy(message_id):
     """Delete a message."""
-    # Added line 362, and 372-374.
+    # Added line 377-378, and 388-390.
     try:
         if session.get(CURR_USER_KEY) == g.user.id:
             if not g.user:
@@ -454,6 +454,7 @@ def homepage():
     - anon users: no messages
     - logged in: 100 most recent messages of followed_users
     """
+    # Added line 462
     # g is a flask object that has data of the logged in user.
     # g.user returns a User object of the current user
     if g.user:
