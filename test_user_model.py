@@ -37,10 +37,11 @@ class UserModelTestCase(TestCase):
             password="HASHEDPASSWORD",
             image_url=""
         )
-        self.user1 = user1
+        # self.user1 = user1
         db.session.add(user1)
         db.session.commit()
-        self.user1_id = user1.id
+        self.user1 = user1
+        self.user1_id = self.user1.id
 
         user2 = User(
             email="test2@test2.com",
@@ -90,6 +91,7 @@ class UserModelTestCase(TestCase):
         self.assertEqual(self.user1, self.user1)
         self.assertEqual(self.user1.email, 'test@test.com')
         self.assertEqual(self.user1.username, 'testuser')
+        self.assertEqual(self.user1.id, self.user1_id)
 
 
     def test_user_model_following(self):
