@@ -30,27 +30,24 @@ class UserViewsTestCase(TestCase):
         User.query.delete()
         Message.query.delete()
         Follows.query.delete()
-
         self.client = app.test_client()
+
+        signup = User.signup(
+            email="test@test.com",
+            username="testuser",
+            password="HASHED_PASSWORD",
+            image_url="http//:www.testjpg.jpg"
+        )
+        db.session.add(signup)
+        db.session.commit()
+        self.signup = signup
     
     def tearDown(self):
         """Clear session data."""
         db.session.rollback()
-        # db.drop_all()
 
     def test_login(self):
         """Tests model's login view."""
-
-        signup = User.signup(
-            email="test@test.com",
-            username="testuser",
-            password="HASHED_PASSWORD",
-            image_url="http//:www.testjpg.jpg"
-        ) 
-
-        db.session.add(signup)
-        db.session.commit()
-
         with self.client as client:
             client.get('/')
 
@@ -59,61 +56,30 @@ class UserViewsTestCase(TestCase):
                 , None
             )
 
-            credentials = {"username": 'testuser', "password": 'HASHED_PASSWORD'}
+            credentials = {
+                            "username": self.signup.username,
+                            "password": 'HASHED_PASSWORD'
+                        }
             resp = client.post('/login', data=credentials, follow_redirects=True)
             
             self.assertEqual(resp.status_code, 200)
-            
-            self.assertEqual(
-                session.get("curr_user")
-                , 1
-            )
+            # print("SIGN UP ID", self.signup.id)
+            self.assertEqual(session.get("curr_user"), self.signup.id)
 
-            user_query = User.query.one()
-            self.assertEqual(user_query.email, "test@test.com")
+            user_query = User.query.filter_by(username = self.signup.username).first()
+            self.assertEqual(user_query.email, self.signup.email)
 
     def test_login_fail(self):
         """Tests model's login view for fail."""
-
-        signup = User.signup(
-            email="test@test.com",
-            username="testuser",
-            password="HASHED_PASSWORD",
-            image_url="http//:www.testjpg.jpg"
-        ) 
-
-        db.session.add(signup)
-        db.session.commit()
-
         with self.client as client:
-
             client.get('/')
-
             # curr_user should not be in session 
-            self.assertEqual(
-                session.get("curr_user")
-                , None
-            )
-
-            credentials = {"username": 'testuser', "password": 'WRONG_HASHED_PASSWORD'}
+            self.assertEqual(session.get("curr_user"), None)
+            credentials = {
+                            "username": self.signup.username,
+                            "password": 'WRONG_PASSWORD'
+                        }
             resp = client.post('/login', data=credentials, follow_redirects=True)
-            
-            # curr_user should not be in session
-            self.assertEqual(
-                session.get("curr_user")
-                , None
-            )
-
             self.assertEqual(resp.status_code, 200)
-
-                # g.user = signup
-                # pdb.set_trace()
-                # html = likes_resp.get_data() 
-                # self.assertEqual('<h1></h1>', html)
-
-                # self.maxDiff=None
-                # Keep getting error when testing html, its too long
-                # I went to pdb, then tried data; it did not work
-                # html = likes_resp.get_data(as_text=True)
-                # self.maxDiff=None
-                # self.assertEqual('<h1></h1>', html) 
+            # curr_user should not be in session
+            self.assertEqual(session.get("curr_user"), None)
