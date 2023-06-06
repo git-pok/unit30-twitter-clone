@@ -23,15 +23,15 @@ def delete_like(message):
     db.session.commit()
 
 
-def add_to_like(user_idf, message_idf, like_id, message_user_id):
-    if user_idf == message_user_id:
+def add_to_like(curr_user_id, liked_message_id, like_exists, message_user_id):
+    if curr_user_id == message_user_id:
         flash("Current user cant like own messages.", "danger")
-    elif like_id:
-        delete_like(message_idf)
+    elif like_exists:
+        delete_like(liked_message_id)
         db.session.rollback()
         flash(f"Successfully unliked message!", "success")
     else:
-        like = Likes(user_id=user_idf, message_id=message_idf)
+        like = Likes(user_id=curr_user_id, message_id=liked_message_id)
         db.session.add(like)
         db.session.commit()
         db.session.rollback()
