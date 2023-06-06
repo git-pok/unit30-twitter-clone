@@ -23,14 +23,36 @@ class MessageModelTestCase(TestCase):
     """Test Message model."""
 
     def setUp(self):
-        """Drop/create tables and delete queries."""
+        """
+            Drop/create tables and delete queries.
+            Create database data.
+        """
         db.drop_all()
         db.create_all()
         User.query.delete()
         Message.query.delete()
         Follows.query.delete()
-
         self.client = app.test_client()
+        
+        u = User(
+            id=1,
+            email="test@test.com",
+            username="testuser",
+            password="HASHED_PASSWORD",
+            image_url=""
+        )
+        self.user = u
+        id = u.id
+        db.session.add(u)
+
+        msg = Message(
+            text="test text",
+            user_id=id,
+            timestamp=datetime.utcnow()
+        )
+        self.msg = msg
+        db.session.add(msg)
+        db.session.commit()
     
     def tearDown(self):
         """Tear down session data."""
@@ -39,56 +61,16 @@ class MessageModelTestCase(TestCase):
 
     def test_message_model_relationship(self):
         """Tests model's relationships."""
-
-        u = User(
-            email="test@test.com",
-            username="testuser",
-            password="HASHED_PASSWORD"
-        )
-
-        db.session.add(u)
-        db.session.commit()
-
-        id = u.id
-
-        msg = Message(
-            text="test text",
-            user_id=id,
-            timestamp=datetime.utcnow()
-        )
-
-        db.session.add(msg)
-        db.session.commit()
-
-        # Message should have no likes, and a user object
-        self.assertEqual(len(msg.like), 0)
-        self.assertEqual(msg.user, u)
-        self.assertEqual(msg.id, 1)
+        user_id = self.user.id
+        self.assertEqual(len(self.msg.like), 0)
+        self.assertEqual(self.msg.user, self.user)
+        self.assertEqual(self.msg.id, user_id)
+        self.assertEqual(self.msg.user.email, self.user.email)
         
     
     def test_message_model_instances(self):
         """Tests model's instances."""
-        u = User(
-            email="test@test.com",
-            username="testuser",
-            password="HASHED_PASSWORD"
-        )
-
-        db.session.add(u)
-        db.session.commit()
-
-        id = u.id
-
-        msg = Message(
-            text="test text",
-            user_id=id,
-            timestamp=datetime.utcnow()
-        )
-
-        db.session.add(msg)
-        db.session.commit()
-
         # Message object should have data
-        self.assertEqual(msg, msg)
-        self.assertEqual(msg.text, 'test text')
-        self.assertEqual(msg.id, 1)
+        user_id = self.user.id
+        self.assertEqual(self.msg.text, "test text")
+        self.assertEqual(isinstance(self.msg.timestamp, datetime), True)
