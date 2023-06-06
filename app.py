@@ -281,17 +281,15 @@ def profile():
                 return redirect(f"/users/{user.id}")
 
             if form.validate_on_submit():
-                edit_form_auth = User.authenticate(form.username.data,
+                edit_form_auth = User.authenticate(g.user.username,
                 form.password.data
                 )
 
                 if edit_form_auth:
-                    emailf = form.data.get("email")
-                    usernamef = form.data.get("username")
-                    image_urlf = form.data.get("image_url")
-                    header_image_urlf = form.data.get("header_image_url")
-  
-                    update_user(user, emailf, usernamef, image_urlf, header_image_urlf)
+                    form_data = form.data
+                    form_data.pop("password")
+                    form_data.pop("csrf_token")
+                    update_user(form_data, user)
                     flash(f"Successfully edited user!", "success")
                     return redirect(f"/users/{user.id}")
                 else:
